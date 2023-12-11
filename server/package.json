@@ -2,13 +2,13 @@
   "name": "issue-tracker",
   "version": "1.0.0",
   "description": "web app to track issues",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/n/a.git"
+    "url": "git+https://github.com/SideControlJS/tracker"
   },
   "author": "JL",
   "license": "ISC",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/n/a#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.18.2",
     "mongodb": "^6.3.0"
   }
