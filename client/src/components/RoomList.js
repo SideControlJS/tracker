@@ -6,8 +6,13 @@ const RoomList = () => {
 
     useEffect(() => {
         const fetchRooms = async () => {
-            const rooms = await getRooms();
-            setRooms(rooms);
+            try {
+                const response = await getRooms();
+                setRooms(response.data); // Make sure to use response.data to get the actual rooms array
+            } catch (error) {
+                console.error('Error fetching rooms:', error);
+                // Handle error here, for example by setting an error state and displaying a message
+            }
         };
 
         fetchRooms();

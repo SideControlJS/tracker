@@ -3,12 +3,16 @@
 const express = require('express');
 const app = express();
 const connectToMongo = require('./configuration/connection'); // Ensure this path is correct
+const cors = require('cors');
 
 // Connect to MongoDB using the external file
 connectToMongo();
 
 // Body parser Middleware (Using built-in Express body parser)
 app.use(express.json());
+
+// Enable CORS
+app.use(cors());
 
 // Use Routes
 app.use('/api/rooms', require('./routes/rooms')); // Ensure these paths are correct
