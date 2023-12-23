@@ -20,7 +20,17 @@ const seedDevices = [
     // ... more devices
 ];
 
+const seedIssues = [
+  { name: 'Living Room Keypad', type: 'Keypad', status: 'Open', description: 'Keypad not responding' },
+  { name: 'Bedroom Keypad', type: 'Keypad', status: 'Open', description: 'Keypad not responding' },
+  // ... more issues
+];
+
+const seedUsers = [
+  { userName: 'John Doe', userEmail: 'johnnyDoe@lol.com' },
+    // ... more users
 // ... Seed data for Issues and Users
+];
 
 const seedDB = async () => {
   await Room.deleteMany({});
@@ -29,6 +39,8 @@ const seedDB = async () => {
 
   await Room.create(seedRooms);
   await Device.create(seedDevices);
+  await Issue.create(seedIssues);
+  await User.create(seedUsers);
   // ... insert other seed data
 
   console.log('Database seeded!');
