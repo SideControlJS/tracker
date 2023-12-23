@@ -16,6 +16,7 @@ Clone repo, 'npm install' in root directory, server, and client. To run locally:
 - [MongoDB](https://www.mongodb.com/) - The database used
 - [Express](https://expressjs.com/) - The web framework used for the server
 - [React](https://reactjs.org/) - The front-end library used
+- [MaterialUI](https://mui.com/material-ui) - The react component library used for UI
 - [Node.js](https://nodejs.org/) - The server environment
 
 ## Authors
