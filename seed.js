@@ -1,51 +1,62 @@
 const mongoose = require('mongoose');
-const Room = require('./models/Room'); // Adjust the path based on your structure
-const Device = require('./models/Device');
-const Issue = require('./models/Issue');
-const User = require('./models/User');
+const Room = require('./server/models/Room'); // Adjust the path based on your structure
+const Device = require('./server/models/Device');
+const Issue = require('./server/models/Issue');
+const User = require('./server/models/User');
 
 mongoose.connect('mongodb://localhost:27017/tracker', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 
-const seedRooms = [
-  { roomNumber: '101', roomName: 'King', devices: '15', issues: '2' },
-  { roomNumber: '102', roomName: 'Queen', devices: '11', issues: '0' }
-  // ... more rooms
-];
-
-const seedDevices = [
-    { name: 'Living Room Keypad' }, { name: 'Bedroom Keypad' }, { name: 'Entry Keypad' }, { name: 'Entry Occupany Sensor' }, { name: 'Living Room Occupancy Sensor' }, { name: 'Bedroom Occupancy Sensor' }, { name: 'Living Room Thermostat' }, { name: 'Bedroom Thermostat' }, { name: 'Entry Thermostat' }, { name: 'Living Room Light' }, { name: 'Bedroom Light' }, { name: 'Entry Light' }, { name: 'Living Room Shade' }, { name: 'Bedroom Shade' }, { name: 'Entry Shade' }, { name: 'Living Room TV' }, { name: 'Bedroom TV' }, { name: 'Entry TV' }, { name: 'Living Room Speaker' }, { name: 'Bedroom Speaker' }, { name: 'Entry Speaker' }, { name: 'Living Room Camera' }, { name: 'Bedroom Camera' }, { name: 'Entry Camera' }, { name: 'Living Room Door Lock' }, { name: 'Bedroom Door Lock' }, { name: 'Entry Door Lock' }, { name: 'Living Room Window Lock' }, { name: 'Bedroom Window Lock' }, { name: 'Entry Window Lock' }, { name: 'Living Room Window Shade' }, { name: 'Bedroom Window Shade' }, { name: 'Entry Window Shade' }, { name: 'Living Room Window' }, { name: 'Bedroom Window' }, { name: 'Entry Window' }, { name: 'Living Room Printer' }, { name: 'Bedroom Printer' }, { name: 'Entry Printer' },
-    // ... more devices
-];
-
-const seedIssues = [
-  { name: 'Living Room Keypad', type: 'Keypad', status: 'Open', description: 'Keypad not responding' },
-  { name: 'Bedroom Keypad', type: 'Keypad', status: 'Open', description: 'Keypad not responding' },
-  // ... more issues
-];
-
-const seedUsers = [
-  { userName: 'John Doe', userEmail: 'johnnyDoe@lol.com' },
-    // ... more users
-// ... Seed data for Issues and Users
-];
-
-const seedDB = async () => {
-  await Room.deleteMany({});
+// Seed function
+async function seedDB() {
+  // Clean up the existing collections
+  await User.deleteMany({});
   await Device.deleteMany({});
-  // ... clear other collections if needed
+  await Room.deleteMany({});
+  await Issue.deleteMany({});
 
-  await Room.create(seedRooms);
-  await Device.create(seedDevices);
-  await Issue.create(seedIssues);
-  await User.create(seedUsers);
-  // ... insert other seed data
+  // Create seed data for Users
+  const user1 = await User.create({ userName: 'John Doe', userEmail: 'johnDoe@example.com', userPassword: 'password123'});
+  const user2 = await User.create({ userName: 'Jane Smith', userEmail: 'janeSmith@example.com', userPassword: 'password12' });
+
+  // Create seed data for Devices
+  const device1 = await Device.create({ type: 'Keypad', serialNumber: '1234567890', status: 'Active', room: '101' });
+  const device2 = await Device.create({ type: 'Sensor', serialNumber: '0987654321', status: 'Inactive', room: '102' });
+
+  // Create seed data for Rooms
+  const room1 = await Room.create({ roomNumber: '101', roomName: 'King', devices: [device1._id], issues: [] });
+  const room2 = await Room.create({ roomNumber: '102', roomName: 'Queen', devices: [device2._id], issues: [] });
+
+  // Create seed data for Issues
+  const issue1 = await Issue.create({
+    issueId: 'Z001',
+    description: 'Keypad not responding to button presses',
+    status: 'Open',
+    reportedBy: user1._id, // Referencing the user1 document created above
+    assignedTo: user2._id, // Referencing the user2 document created above
+    room: room1._id, // Referencing the room1 document created above
+    device: device1._id // Referencing the device1 document created above
+  });
+
+  const issue2 = await Issue.create({
+    issueId: 'Z002',
+    description: 'Sensor blew up',
+    status: 'In Progress',
+    reportedBy: user2._id, // Referencing the user2 document created above
+    assignedTo: user1._id, // Referencing the user1 document created above
+    room: room2._id, // Referencing the room2 document created above
+    device: device2._id // Referencing the device2 document created above
+  });
 
   console.log('Database seeded!');
-};
+}
 
+// Execute the seed function
 seedDB().then(() => {
+  mongoose.connection.close();
+}).catch(error => {
+  console.error('Seeding error:', error);
   mongoose.connection.close();
 });
