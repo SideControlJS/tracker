@@ -1,62 +1,80 @@
 const mongoose = require('mongoose');
-const Room = require('./server/models/Room'); // Adjust the path based on your structure
-const Device = require('./server/models/Device');
-const Issue = require('./server/models/Issue');
-const User = require('./server/models/User');
+const User = require('./server/models/User'); // Correct path to User model
+const Device = require('./server/models/Device'); // Correct path to Device model
+const Room = require('./server/models/Room'); // Correct path to Room model
+const Issue = require('./server/models/Issue'); // Correct path to Issue model
 
-mongoose.connect('mongodb://localhost:27017/tracker', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+// Connect to MongoDB (removed deprecated options)
+mongoose.connect('mongodb://localhost:27017/tracker');
 
-// Seed function
 async function seedDB() {
-  // Clean up the existing collections
-  await User.deleteMany({});
-  await Device.deleteMany({});
-  await Room.deleteMany({});
-  await Issue.deleteMany({});
+  try {
+    // Clean up the existing collections
+    await User.deleteMany({});
+    await Device.deleteMany({});
+    await Room.deleteMany({});
+    await Issue.deleteMany({});
 
-  // Create seed data for Users
-  const user1 = await User.create({ userName: 'John Doe', userEmail: 'johnDoe@example.com', userPassword: 'password123'});
-  const user2 = await User.create({ userName: 'Jane Smith', userEmail: 'janeSmith@example.com', userPassword: 'password12' });
+    // Create seed data for Users with required fields
+    const user1 = await User.create({
+      userName: 'John Doe',
+      userEmail: 'johnDoe@example.com',
+      userPassword: 'securepassword123' // Provide a valid password for the user
+    });
 
-  // Create seed data for Devices
-  const device1 = await Device.create({ type: 'Keypad', serialNumber: '1234567890', status: 'Active', room: '101' });
-  const device2 = await Device.create({ type: 'Sensor', serialNumber: '0987654321', status: 'Inactive', room: '102' });
+    const user2 = await User.create({
+      userName: 'Jane Smith',
+      userEmail: 'janeSmith@example.com',
+      userPassword: 'securepasswordABC' // Provide a valid password for the user
+    });
 
-  // Create seed data for Rooms
-  const room1 = await Room.create({ roomNumber: '101', roomName: 'King', devices: [device1._id], issues: [] });
-  const room2 = await Room.create({ roomNumber: '102', roomName: 'Queen', devices: [device2._id], issues: [] });
+    // Create seed data for Rooms
+    const room1 = await Room.create({ roomNumber: '101', roomName: 'King' });
+    const room2 = await Room.create({ roomNumber: '102', roomName: 'Queen' });
 
-  // Create seed data for Issues
-  const issue1 = await Issue.create({
-    issueId: 'Z001',
-    description: 'Keypad not responding to button presses',
-    status: 'Open',
-    reportedBy: user1._id, // Referencing the user1 document created above
-    assignedTo: user2._id, // Referencing the user2 document created above
-    room: room1._id, // Referencing the room1 document created above
-    device: device1._id // Referencing the device1 document created above
-  });
+    // Create seed data for Devices, including all required fields
+    const device1 = await Device.create({
+      name: 'Living Room Keypad',
+      serialNumber: 'SN001', // Example serial number
+      type: 'Keypad', // Example type
+      room: room1._id // Use the ObjectId from the created room
+    });
 
-  const issue2 = await Issue.create({
-    issueId: 'Z002',
-    description: 'Sensor blew up',
-    status: 'In Progress',
-    reportedBy: user2._id, // Referencing the user2 document created above
-    assignedTo: user1._id, // Referencing the user1 document created above
-    room: room2._id, // Referencing the room2 document created above
-    device: device2._id // Referencing the device2 document created above
-  });
+    const device2 = await Device.create({
+      name: 'Entry Occupancy Sensor',
+      serialNumber: 'SN002', // Example serial number
+      type: 'Sensor', // Example type
+      room: room2._id // Use the ObjectId from the created room
+    });
 
-  console.log('Database seeded!');
+    // Create seed data for Issues, referencing Users, Rooms, and Devices
+    const issue1 = await Issue.create({
+      issueId: 'ISSUE1',
+      description: 'Keypad not responding',
+      status: 'Open',
+      reportedBy: user1._id,
+      assignedTo: user2._id,
+      room: room1._id,
+      device: device1._id
+    });
+
+    const issue2 = await Issue.create({
+      issueId: 'ISSUE2',
+      description: 'Sensor malfunction',
+      status: 'In Progress',
+      reportedBy: user2._id,
+      assignedTo: user1._id,
+      room: room2._id,
+      device: device2._id
+    });
+
+    console.log('Database seeded!');
+  } catch (error) {
+    console.error('Seeding error:', error);
+  } finally {
+    // Close the Mongoose connection
+    mongoose.connection.close();
+  }
 }
 
-// Execute the seed function
-seedDB().then(() => {
-  mongoose.connection.close();
-}).catch(error => {
-  console.error('Seeding error:', error);
-  mongoose.connection.close();
-});
+seedDB();

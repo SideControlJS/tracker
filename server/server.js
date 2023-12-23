@@ -5,6 +5,7 @@ const app = express();
 const connectToMongo = require('./configuration/connection'); // Ensure this path is correct
 const cors = require('cors');
 
+
 // Connect to MongoDB using the external file
 connectToMongo();
 
