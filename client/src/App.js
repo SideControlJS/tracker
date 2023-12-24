@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import RoomList from './components/RoomList'; // Ensure you have created this component
+import RoomList from './components/RoomList'; 
 import AddRoomForm from './components/AddRoomForm';
 
 function App() {

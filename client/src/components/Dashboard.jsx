@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
-import RoomList from './RoomList'; // Assuming you have a RoomList component
+import RoomList from './RoomList'; 
 
 const Dashboard = () => {
   const [showRoomList, setShowRoomList] = useState(false);
